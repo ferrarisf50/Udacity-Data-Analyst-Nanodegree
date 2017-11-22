@@ -28,7 +28,7 @@ library(moments)
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
 userid <- Sys.getenv("USERNAME")
-setwd(paste("C:/users/",userid,"/desktop/creditcard",sep = ""))
+setwd(paste("C:/users/",userid,"/desktop/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection",sep = ""))
 
 
 creditcard=read.csv("creditcard.csv")
@@ -528,3 +528,12 @@ Due to the frauds are very rare, I am using AUPRC as the metric to evaluate a mo
 
 The future work I think will investigate the fraudulent cases that are failed to be detected by the model.  
 
+# References
+
+[https://www.kaggle.com/dalpozz/creditcardfraud](https://www.kaggle.com/dalpozz/creditcardfraud)
+
+[https://cran.r-project.org/web/packages/tsne/tsne.pdf](https://cran.r-project.org/web/packages/tsne/tsne.pdf)
+
+[https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf](https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf)
+
+[https://cran.r-project.org/web/packages/moments/moments.pdf](https://cran.r-project.org/web/packages/moments/moments.pdf)
