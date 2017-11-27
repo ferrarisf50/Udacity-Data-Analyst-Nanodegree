@@ -23,6 +23,7 @@ library(reshape2)
 library(ggplot2)
 library(Rtsne)
 library(moments)
+library(gridExtra)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -31,7 +32,7 @@ userid <- Sys.getenv("USERNAME")
 setwd(paste("C:/users/",userid,"/desktop/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection",sep = ""))
 
 
-creditcard=read.csv("creditcard.csv")
+creditcard <- read.csv("creditcard.csv")
 
 creditcard$Class <- factor(creditcard$Class)
 
@@ -86,7 +87,8 @@ The largest number of Time is 172792 second which roughly equals to 48 hours. It
 
 ```{r echo=FALSE, warning=FALSE}
 
-creditcard$Hour <- as.numeric(strftime(as.POSIXct(creditcard$Time,origin = "1960-01-01",tz = "GMT"), format="%H",tz = "GMT"))
+creditcard$Hour <- as.numeric(strftime(as.POSIXct(creditcard$Time,
+     origin = "1960-01-01",tz = "GMT"), format="%H",tz = "GMT"))
 
   
 qplot(x=Hour,data=creditcard,bins=24)
@@ -110,41 +112,47 @@ creditcard$Amount_A=log10(creditcard$Amount+1)
 
 The distribution of Amount is highly skewed. After plotting on a log scale, it appears a normal-like bimodal distribution.
 
-**Explore V1-V28**
 
 Let's plot the histograms of V1-V28.
 
+
+**Explore V1**
+
 ```{r echo=FALSE,warning=FALSE}
-a <-list()
-for (i in 2:29)
-{
-  a[[i]]=ggplot(aes_string(x=names(creditcard)[i]),data=creditcard)+
-    geom_histogram(bins=1000)
-  print(a[[i]])
-} 
+# a <- list()
+# for (i in 2:29) #  plot histogram for V1-V28
+# {
+#   a[[i]] <- ggplot(aes_string(x=names(creditcard)[i]),data=creditcard)+
+#     geom_histogram(bins=1000)
+#   print(a[[i]])
+# } 
+
+# Define a function to plot a feature histogram and density and print kurtosis and skewness.
+plotfeature <- function(feature) {
+  p1 <- ggplot(aes_string(x=feature),data=creditcard)+
+     geom_histogram(bins=1000)
+  
+  mean=mean(creditcard[,feature])
+  std=sd(creditcard[,feature])
+  p2 <- ggplot(aes_string(x=feature),data=creditcard)+
+     geom_density()+
+     stat_function(fun=dnorm,
+                         color="red",
+                         args=list(mean=mean, 
+                                  sd=std))
+  grid.arrange(p1,p2,ncol=2)
+  kurtosis <- kurtosis(creditcard[feature])
+  skewness <- skewness(creditcard[feature])
+  sprintf("%s kurtosis=%f skewness=%f",feature,kurtosis,skewness)
+}
 
 
+
+plotfeature('V1')
 
 ```
 
-Boxplot of V1-V28
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-melted_V1_V28 <- melt(creditcard[,1:29],id.vars="Time")
-ggplot(melted_V1_V28) +
-  geom_boxplot(aes(x=variable, y=value, color=variable))
-```
-
-Can't see the box? Let's make another boxplot of V1-V28 with most outliers removed. 
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(melted_V1_V28) +
-  geom_boxplot(aes(x=variable, y=value, color=variable))+
-  scale_y_continuous(limits = c(-5, 5))
-```
-
-The plots show most distributions are low skewness with zero mean, 
-some of them are high kurtosis e.g. V28, some distributions are close to normal e.g. V13. V1 is high left-skewed, I make a transformation function log10(-x+3) that converts the long tail into a better shape.
+The red line is a density function of normal distrubtion with V1's mean and V1's standard deviation. Obviously V1 is not normally distributed. V1 is highly left-skewed so I can't view the details. Let's make a transformation log10(-x+3) that converts the long tail into a better shape.
 
 ```{r echo=FALSE, warning=FALSE}
 
@@ -153,17 +161,352 @@ ggplot(aes(x=V1_A),data=creditcard)+
   geom_histogram(bins=1000)+
   labs(x="V1_A=log10(-V1+3)")
 
+kurtosis <- kurtosis(creditcard['V1_A'])
+skewness <- skewness(creditcard['V1_A'])
+sprintf("V1_A kurtosis=%f skewness=%f",kurtosis,skewness)
 ```
 
-This plot shows the V1 after transformation. It appears three peaks where the data cluster.
+This plot shows the V1 after transformation. The value of kurtosis and skewness are much reduced. It appears three peaks where the data cluster. 
+
+**Explore V2**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V2')
+
+```
+
+V2 has a high kurtosis distribution. I am intereted in the center of V2, how does it looks like while the values are around the mean? Let's plot another histogram with some outliers removed.
+
+```{r echo=FALSE,warning=FALSE}
+# Define a function to plot a feature histogram with some outliers removed.
+
+plotfeature2 <- function(feature,xlim) {
+  ggplot(aes_string(x=feature),data=creditcard)+
+     geom_histogram(bins=1000)+
+     xlim(x=xlim)
+}
+
+plotfeature2('V2',c(-10,10))
+
+```
+
+There are two peaks in the center of V2.  
+
+
+**Explore V3**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V3')
+```
+
+V3 also has a high kurtosis distribution around mean zero. It looks like V3 is much closer to a normal distribution.
+
+
+**Explore V4**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V4')
+```
+
+V4 looks the closest to normal distribution as far as I see. V4 has several peaks but I don't see anything attractive.
+
+**Explore V5**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V5')
+```
+
+V5 also has a high kurtosis distribution. Let's explore the center of V5.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V5',c(-10,10))
+```
+
+V5 has a smooth distrubtion in the center. The center looks much closer to a normal distribution.
+
+
+**Explore V6**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V6')
+
+```
+
+V6 also has high kurtosis but with a small subpeak on the right tail. Let's zoom in the center again.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V6',c(-10,10))
+
+```
+
+**Explore V7**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V7')
+
+```
+
+V7 has an extremely high kurtosis. Plot the center again.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V7',c(-8,8))
+
+```
+
+V7 looks like a normal distribution but with three peaks in the center.
+
+**Explore V8**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V8')
+
+```
+
+V8 has an extremely high kurtosis. Plot the center again.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V8',c(-10,10))
+
+```
+
+The center of V8 is right-skewed.
+
+**Explore V9**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V9')
+
+```
+
+V9 Looks like a normal distribution.
+
+
+**Explore V10**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V10')
+```
+
+Looks like V10 has several subpeaks. Let's see the center again.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V10',c(-5,8))
+```
+
+V10 has two subpeaks on the right tail.
+
+**Explore V11**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V11')
+
+```
+
+It looks like V11 is very close to a normal distribution.
+
+
+
+**Explore V12**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V12')
+```
+
+V12 is a bit close to a normal distribution.
+
+**Explore V13**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V13')
+```
+
+The density of V13 almost matches a normal distribution. I believe V13 is normally distributed.
+
+
+**Explore V14**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V14')
+```
+
+V14 is also close to a normal distribution.
+
+**Explore V15**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V15')
+```
+
+It looks like V15 also comes from a normal distribution.
+
+**Explore V16**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V16')
+```
+
+V16 is very close to a normal distribution.
+
+**Explore V17**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V17')
+```
+
+V17 is also close to a normal distribution.
+
+**Explore V18**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V18')
+```
+
+V18 is also very close to a normal distribution.
+
+**Explore V19**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V19')
+```
+
+V19 is also very close to a normal distribution.
+
+**Explore V20**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V20')
+
+```
+
+V20 has a high kurtosis. Let's explore the center.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V20',c(-5,5))
+
+```
+
+The center of V20 looks like a normal distribution.
+
+**Explore V21**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V21')
+```
+
+V21 also has a high kurtosis. Let's explore the center.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V21',c(-5,5))
+
+```
+
+The center of V21 also looks like a normal distribution.
+
+**Explore V22**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V22')
+```
+
+V22 is also close to a normal distribution.
+
+**Explore V23**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V23')
+```
+
+V23 also has an extremely high kurtosis. Let's explore the center.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V23',c(-5,5))
+
+```
+
+The center of V23 also looks like a normal distribution.
+
+**Explore V24**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V24')
+```
+
+V24 has many subpeaks.
+
+**Explore V25**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V25')
+```
+
+V25 is also close to a normal distribution but it has two peaks in the center.
+
+**Explore V26**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V26')
+```
+
+V26 is a bit close to a normal distribution.
+
+**Explore V27**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V27')
+```
+
+V27 has a very high kurtosis. Let's look at the center.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V27',c(-2.5,2.5))
+```
+
+The center of V27 is pretty close to a normal distribution.
+
+**Explore V28**
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature('V28')
+```
+
+V28 has an extremely high kurtosis. Let's see the center.
+
+```{r echo=FALSE,warning=FALSE}
+plotfeature2('V28',c(-1.5,1.5))
+```
+
+The center of V28 has a right-skewed distribution.
+
+**Boxplot of V1-V28**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+melted_V1_V28 <- melt(creditcard[,1:29],id.vars="Time") #  transpose V1-V28 and Time into a new melted dataset
+ggplot(melted_V1_V28) +
+  geom_boxplot(aes(x=variable, y=value))
+```
+
+Can't see the box? Let's make another boxplot of V1-V28 with most outliers removed. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(melted_V1_V28) +
+  geom_boxplot(aes(x=variable, y=value))+
+  scale_y_continuous(limits = c(-5, 5))
+```
+
+The plots show most distributions are low skewness with zero mean, 
+some of them are high kurtosis e.g. V27 V28, some distributions are close to normal distributions e.g. V13. 
+
+
 
 ### What is the structure of your dataset?
 
-The dataset contains 284807 transaction records in two days. The transactions are ordered by Time. The fraudulent transactions account for only 0.172% of all transactions. The median and mean of the transaction amount are both less than 100, the maximum amount is 25691.16. V1-V28 are zero mean distributions with either high skewed or high kurtosis.
+The dataset contains 284807 transaction records in two days. The transactions are ordered by Time. The fraudulent transactions account for only 0.172% of all transactions. The median and mean of the transaction amount are both less than 100, the maximum amount is 25691.16, the minimum amount is 0. V1-V28 are zero mean distributions with either high skewed or high kurtosis.
+
+I observe V1-V28 containing many outliers. Removing these outliers is better to concentrate on the center of the distribution. However, since this study is intent to detect outliers, I would like to keep all raw data in my analysis.
 
 ### What is/are the main feature(s) of interest in your dataset?
 
-The main features are Class and all independent variables which might be useful to predict the frauds.
+The main features are Class and all independent variables are potentially useful features to predict the frauds. I am interested if the frauds have different patterns on Amount as well as the features V1-V28. 
 
 ### What other features in the dataset do you think will help support your \ investigation into your feature(s) of interest?
 
@@ -176,40 +519,50 @@ The Time counts the second elapsed between the current transaction and the first
 ### Of the features you investigated, were there any unusual distributions? \ Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
 I log-transformed the left-skewed V1 and right-skewed Amount to visualize the data easily. The transformed V1 appear a distribution with three peaks.
-
+For the features having multiple peaks e.g. V24, I don't know how to transform the distribution to a smoother shape.
 
 # Bivariate Plots Section
 
-**Explore Time vs Class**
+**Explore Time vs. Class**
 
 ```{r echo=FALSE, Bivariate_Plots}
-ggplot(aes(x=Time),data=creditcard[creditcard$Class==0,])+
+p1 <- ggplot(aes(x=Time),data=creditcard[creditcard$Class==0,])+
   geom_histogram(binwidth=3600,fill="#00BFC4",color="#00BFC4")+
   labs(x="Time (Class=0)")
 
-ggplot(aes(x=Time),data=creditcard[creditcard$Class==1,])+
+p2 <- ggplot(aes(x=Time),data=creditcard[creditcard$Class==1,])+
   geom_histogram(binwidth=3600,fill="#F8766D",color="#F8766D")+
-  labs(x="Time (Class=0)")
+  labs(x="Time (Class=1)")
 
+grid.arrange(p1, p2, ncol=2)
+
+```
+
+The blue bins are normal transactions of which the number grows at day and reduce at night. The red bins are fraudulent transactions, they seems not to have a day and night pattern. The number of frauds on daytime is a bit higher than at night, but it does not have a significant drop-down at night. I believe the frauds have a different distribution on Time compared to normal transactions. Let's see the density plot.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=Time),data=creditcard)+
   geom_density(aes(y=..density..,color=Class,fill=Class),alpha=0.2)+
   scale_fill_manual(values = c("#00BFC4","#F8766D"))+
   scale_color_manual(values = c("#00BFC4","#F8766D"))
-
 ```
 
-The plots show the frauds have a different distribution on Time compared to normal transactions. The number of frauds on daytime is a bit higher than at night, but it does not have a significant drop-down at night. 
+The plot shows the frauds have a higher density at night than the normal transactions.
 
-**Explore Hour vs Class**
+**Explore Hour vs. Class**
+
+If the frauds have different distribution on Time, what about Hour? Let's plot the graphs again on Hour.
 
 ```{r echo=FALSE}
-ggplot(aes(x=Hour),data=creditcard[creditcard$Class==0,])+
+p1 <- ggplot(aes(x=Hour),data=creditcard[creditcard$Class==0,])+
   geom_histogram(bins=24,fill="#00BFC4",color="#00BFC4")+
   labs(x="Hour (Class=0)")
 
-ggplot(aes(x=Hour),data=creditcard[creditcard$Class==1,])+
+p2 <- ggplot(aes(x=Hour),data=creditcard[creditcard$Class==1,])+
   geom_histogram(bins=24,fill="#F8766D",color="#F8766D")+
   labs(x="Hour (Class=1)")
+
+grid.arrange(p1, p2, ncol=2)
 
 ggplot(aes(x=Hour),data=creditcard)+
   geom_density(aes(y=..density..,color=Class,fill=Class),alpha=0.2)+
@@ -218,29 +571,31 @@ ggplot(aes(x=Hour),data=creditcard)+
   
 ```
 
-Clearly, the frauds can occur any time in a day.  However, it looks like the time does not tell a rule to distinguish fraud and nonfraud transactions because there are still thousands of normal transactions at night.
+Clearly, the frauds spread out in a day regardless of time. However, the count number of frauds at night is approximately no more than 100 while there are still ten thousands of normal transactions at night. The Hour or Time is not sufficient to tell a fraud, I need to explore more features. Let's see Amount.
 
-**Explore Amount and transformed Amount vs Class**
+**Explore Amount and transformed Amount vs. Class**
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-ggplot(aes(x=Amount),data=creditcard[creditcard$Class==0,])+
+p1 <- ggplot(aes(x=Amount),data=creditcard[creditcard$Class==0,])+
   geom_histogram(bins=100,fill="#00BFC4",color="#00BFC4")+
   labs(x="Amount (Class=0)")+
   scale_x_continuous(limits=c(0,1000))
 
-ggplot(aes(x=Amount),data=creditcard[creditcard$Class==1,])+
+p2 <- ggplot(aes(x=Amount),data=creditcard[creditcard$Class==1,])+
   geom_histogram(bins=100,fill="#F8766D",color="#F8766D")+labs(x="Amount (Class=1)")
   # scale_x_continuous(limits=c(0,1000))
 
 
-ggplot(aes(x=Amount_A),data=creditcard[creditcard$Class==0,])+
+p3 <- ggplot(aes(x=Amount_A),data=creditcard[creditcard$Class==0,])+
   geom_histogram(bins=100,fill="#00BFC4",color="#00BFC4")+
   labs(x="log10(Amount+1) (Class=0)")
 
-ggplot(aes(x=Amount_A),data=creditcard[creditcard$Class==1,])+
+p4 <- ggplot(aes(x=Amount_A),data=creditcard[creditcard$Class==1,])+
   geom_histogram(bins=100,fill="#F8766D",color="#F8766D")+
   labs(x="log10(Amount+1) (Class=1)")
+
+grid.arrange(p1, p2,p3,p4, ncol=2)
 
 ggplot(aes(x=Amount_A),data=creditcard)+
   geom_density(aes(y=..density..,color=Class,fill=Class),alpha=0.2)+
@@ -248,20 +603,20 @@ ggplot(aes(x=Amount_A),data=creditcard)+
   scale_color_manual(values = c("#00BFC4","#F8766D"))+
   labs(x="log10(Amount+1)")
 
-summary(creditcard[creditcard$Class==1,30])
+summary(creditcard[creditcard$Class==1,c('Amount')])
 ```
 
-It seems the distributions of transaction amount of fraud or nonfraud are similar. 
+I can see the Amount of most frauds are very small. It seems the distributions of transaction amount of frauds or nonfrauds are similar. I think the Amount is still not sufficient to predict a fraud. 
 
-**Explore V1-V28 vs Class**
+**Explore V1-V28 vs. Class**
 
-The density distribution of V1-V28 by Class
+Since V1-V28 are PCA vectors with no meaning as well as having similar distributions. I will plot the density distributions of V1-V28 by Class in a group. I am interested if the distributions vary between frauds and nonfrauds.
 
 ```{r echo=FALSE}
-a <-list()
-for (i in 2:29)
+a <- list()
+for (i in 2:29)  #  Loop over feature V1-V28
 {
-  a[[i]]=ggplot(aes_string(x=names(creditcard)[i]),data=creditcard)+
+  a[[i]] <- ggplot(aes_string(x=names(creditcard)[i]),data=creditcard)+
     geom_density(aes(y=..density..,color=Class,fill=Class),alpha=0.2)+
     scale_fill_manual(values = c("#00BFC4","#F8766D"))+
     scale_color_manual(values = c("#00BFC4","#F8766D"))
@@ -277,19 +632,28 @@ ggplot(aes(x=V1_A),data=creditcard)+
 
 ```
 
-The plots show the distribution of frauds have a lower kurtosis (more flatten) compared to the normal transactions. Some features have a apparantly different median of values on the frauds. I think those features with less overlapping area under the density functions can be useful to detect the frauds.
+Let's summary what I found. 
 
-# Explore Amount vs Hour
+V1-V4 V9-V12 V14 V16-V18 have apparently different distributions for the frauds. There are red areas under the density function of the frauds without much overlapping the blue areas. I think if a detector focuses on the transactions in those areas, it can catch many frauds.
+
+V5-V7 V19 V21 have different distributions for the frauds but the density functions of the frauds have less areas without overlapping the density of nonfrauds. These features seem less important to identify the frauds.
+
+The area under the density functions of V8 V13 V15 V20 V22-V28 are almost overlapped by the nonfrauds. I think these features might not be useful to detect the frauds, but I will keep exploring these features in the multivariate analysis section.
+
+
+**Explore Amount vs. Hour**
+
+Intuitively, the Amount would be higher at daytime since people have more activities. But let's see the boxplot. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ggplot(creditcard) +
-  geom_boxplot(aes(x=as.factor(Hour), y=Amount, color=as.factor(Hour)))+
+  geom_boxplot(aes(x=as.factor(Hour), y=Amount))+
    scale_y_continuous(limits = c(-1, 250))+
   labs(x="Hour")
 ```
 
-The plot shows most of transactions amount are less than 200, the median amount is various around 20 during a day.
+The plot shows most of transactions amount are less than 200, the median amount is various around 20 during a day. As I expect, the Amount is higher at daytime.
 
 
 # Bivariate Analysis
@@ -302,23 +666,24 @@ It seems the frauds can occur uniformly anytime in a day, not relied on day and 
 
 The smallest amount of fraud is 0 and the larget amount of fraud is 2126. I don't see any specific amount that has a significantly higher probability indicating it is a fraud.
 
-The features V1-V28 seem more informed because most of these features show different distributions between fraud and nonfraud.
+The features V1-V28 seem more informed because a portion of these features show different distributions between frauds and nonfrauds. I would like to explore the interactions among V1-V28 as well as Amount and Time, to see if any hidden pattern exist only in a higher dimension plot.
 
 ### Did you observe any interesting relationships between the other features \
 (not the main feature(s) of interest)?
 
-The median amount of transactions at day is higher than night. The daytime transactions tend to have higher both number and amount.
+The median amount of transactions at day is higher than night. The daytime transactions tend to have higher both number and amount. 
 
 
 ### What was the strongest relationship you found?
 
-The features V1-V7 V9-V12 V14 V16-V19 V21 have apparently distinct shapes of density across two Class. I think these features are very important to detect the frauds.
+The features V1-V4 V9-V12 V14 V16-V18 have apparently distinct shapes of density across two Class. I think these features are very important to detect the frauds.
 
 
 # Multivariate Plots Section
 
-**Amount vs Time by Class**
+**Amount vs. Time by Class**
 
+Let's plot the time series of the transactions.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(creditcard,aes(Time,Amount))+geom_point(aes(color=Class,size=Class,alpha=Class))+
@@ -331,13 +696,16 @@ ggplot(creditcard,aes(Time,Amount))+geom_point(aes(color=Class,size=Class,alpha=
 
 ```
 
-The red points show the occurance of a fraud. It looks like the reds points are always surrounded by white points so that we can't conclude any patten that frauds behave differently from normality. The Amount may not be useful for fraud detection.
+The red points show the occurance of a fraud. It looks like the reds points are always surrounded by white points so that we can't conclude any patten that frauds behave differently from normal transactions. I see almost all the high Amount transactions (>3000) are committed at daytime. It's funny that none of the frauds is higher than 3000.
+
 
 **Time series plot V1-V28 by Class**
 
+Let's plot more time series on other features.
+
 ```{r echo=FALSE}
-a <-list()
-for (i in 2:29)
+a <- list()
+for (i in 2:29)  #  Loop over feature V1-V28
 {
 a[[i]] <- ggplot(creditcard,aes_string(x='Time',y=names(creditcard)[i]))+geom_jitter(aes(color=Class,size=Class,alpha=Class))+
   scale_color_manual(values =  c("white","red"))+
@@ -349,30 +717,59 @@ a[[i]] <- ggplot(creditcard,aes_string(x='Time',y=names(creditcard)[i]))+geom_ji
 } 
 ```
 
-Looking at the red points, if they are not surrounded by or far away from any white point, I think a surpervised learning model is able to draw a boundary to separate the frauds. Based on the plots above, I would like to select the better features V1-V5 V7-V12 V14 V16-V18 which clearly separated the most red points from the white point clusters.
 
-There are a couple of features that have a clear shift during a specific time in a day e.g. V12 V13. I am curious about the hours when the shift occurs. I think the Hour is a useful feature that should be included in the model.
+Let's summary what I found from the plots above:
 
-Let's explore V12 and V13.
+Looking at the red points, if they are not surrounded by or far away from any white point, I think a surpervised learning model is able to draw a boundary to separate the frauds. Based on the plots above, I would like to select the features V1-V5 V7-V12 V14 V16-V18 which clearly separated the most red points from the white point clusters.
+
+The features V9 V11-V15 V17 that have a clear shift during a specific time in a day. I am curious about the hours when the shift occurs. 
+
+The features V4 V26 have a day shift. The second day of V4 has a larger variance than the first day. The second day of V26 has a lower mean than the first day. Looking at the first day of V4, there are many frauds outside the cluster of nonfrauds, but in the second day because the shift occurs, many frauds are no longer outstanding far away from the nonfrauds cluster. Hence, I would like to create a new feature Day to represent the day shift. 
+
+**Create a new feature Day**
+
+Let's see the summary of Day.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(creditcard,aes(Time,V12))+geom_point(aes(color=Hour))
-ggplot(creditcard,aes(Time,V13))+geom_point(aes(color=Hour))
+
+creditcard$Day <- as.factor(as.numeric(strftime(as.POSIXct(creditcard$Time,
+     origin = "1960-01-01",tz = "GMT"), format="%d",tz = "GMT"))-1)
+summary(creditcard$Day)
+
 ```
 
-The plots show the shifts occur on time everyday from 1:00 to 7:00. Interestingly, those transactions 'forget' to shift V12 value back to normal at daytime, are probably being regarded as frauds. 
+There are 144786 transactions on the first day while 140021 transactions on the second day.
+
+
+**Explore V9 V11-V15 V17 vs. Time by Hour**
+
+Let's explore the hour shifts inside V9 V11-V15 V17.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(creditcard,aes(Time,V9))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V11))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V12))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V13))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V14))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V15))+geom_point(aes(color=Hour))
+ggplot(creditcard,aes(Time,V17))+geom_point(aes(color=Hour))
+```
+
+We see that all the shifts occur everyday from 1:00 to 7:00. Interestingly, those transactions 'forget' to shift V12 value back to normal at daytime, are probably being regarded as frauds. 
 
 **Pairs plot of all features by Class** 
 
 ```{r echo=FALSE, Multivariate_Plots}
-table4=creditcard[creditcard$Class==0,]
+table4 <- creditcard[creditcard$Class==0,]
 
 set.seed(1234)
 names(table4)
-temp <-table4[sample.int(nrow(table4),10000),]
+temp <- table4[sample.int(nrow(table4),10000),]
 temp2 <- rbind(temp,creditcard[creditcard$Class==1,])
 
-p<-ggpairs(temp2,columns=2:30, 
+# Pairs plot for V1-V28 and Amount
+p <- ggpairs(temp2,columns=2:30, 
         mapping = ggplot2::aes(color = Class), 
         
         lower = list(continuous = wrap("points", alpha = 0.3)),
@@ -395,20 +792,26 @@ The pairs plot shows that the normal transactions do not have significant correl
 
 **Explore correlations**
 
+Let's make a heat matrix plot to better understand the correlation.
+
 ```{r echo=FALSE,message=FALSE, warning=FALSE}
-table4 <- cor(creditcard[creditcard$Class==0,c(2:30,33,34)])
-table5 <- cor(creditcard[creditcard$Class==1,c(2:30,33,34)])
 
-melted_table4 <- melt(table4)
-melted_table5 <- melt(table5)
+remove.col <- c("Time","Class","Hour","Day")
 
-ggplot(data = melted_table4, aes(x=Var1, y=Var2, fill=value)) + 
+table4 <- cor(creditcard[creditcard$Class==0,-which(names(creditcard) %in% remove.col)])
+                         
+table5 <- cor(creditcard[creditcard$Class==1,-which(names(creditcard) %in% remove.col)])
+
+melted.table4 <- melt(table4)
+melted.table5 <- melt(table5)
+
+ggplot(data = melted.table4, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile(color="white")+
   scale_fill_gradient2(low = "blue", high = "blue", mid = "white")+
   ggtitle("Class=0") 
 
 
-ggplot(data = melted_table5, aes(x=Var1, y=Var2, fill=value)) + 
+ggplot(data = melted.table5, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile(color="white")+
   scale_fill_gradient2(low = "blue", high = "blue", mid = "white")+
   ggtitle("Class=1") 
@@ -416,34 +819,34 @@ ggplot(data = melted_table5, aes(x=Var1, y=Var2, fill=value)) +
 
 ```
 
-The plots show that the features are almost not correlated for the normal transactions. However, the frauds have strong correlations among these features V1-V5 V7 V9-V12 V14 V16-V19. 
+The plots show that the features are almost not correlated for the normal transactions, while the frauds have strong correlations among these features V1-V5 V7 V9-V12 V14 V16-V19. I think the correlations help to reduce redundant features but may not be useful for classifying the frauds.
 
 **t-SNE plot**
 
 ```{r echo=FALSE,message=FALSE, warning=FALSE}
 remove <- c("Time","V1","V6","V8","V13","V15","V19","V20","V21","V22","V23","V24","V25","V26","V27","V28","Amount","Amount_A")
 
-table5=unique(creditcard[ , -which(names(creditcard) %in% remove)])
+table5 <- unique(creditcard[ , -which(names(creditcard) %in% remove)])
 table5$Hour <- as.factor(table5$Hour)
 
 set.seed(456)
-temp=table5[table5$Class==0,]
-temp <-temp[sample.int(nrow(temp),10000),]
+temp <- table5[table5$Class==0,]
+temp <- temp[sample.int(nrow(temp),10000),]
 
 temp2 <- rbind(temp,table5[table5$Class==1,])
 
 tsne <- Rtsne(temp2, dims = 2, perplexity=30, verbose=TRUE, max_iter = 1000)
 
-temp3<-as.data.frame(tsne$Y)
+temp3 <- as.data.frame(tsne$Y)
 
 ggplot(temp3,aes(V1,V2))+geom_point(aes(color=temp2$Class,size=temp2$Class,alpha=temp2$Class))+
   scale_color_manual(values =  c("#00BFC4","#F8766D"))+
   scale_size_manual(values=c(1,1))+
   scale_alpha_manual(values=c(0.1,1))+
-  labs(title="t SNE plot\n",x="t-SNE Vector_1",y="t-SNE Vector_2")
+  labs(title="t-SNE plot\n",x="t-SNE Vector_1",y="t-SNE Vector_2")
 ```
 
-I choose the features V1-V5 V7 V9-V12 V14 V16-V18 and Hour to run a t-SNE algorithm since these features show up stronger fraud patterns. The t-SNE plot contains all fraud points and 10000 samples of nonfraud. The plot shows two major clusters of frauds (upper left and lower left) as well as other individual fraud whose pattern or features may look very similar to normal transactions so as hard to be identified.
+I choose the features V1-V5 V7 V9-V12 V14 V16-V18 Hour and Day to run a t-SNE algorithm since these features show up stronger fraud patterns. The t-SNE plot contains all fraud points and 10000 samples of nonfrauds. The plot shows two major clusters of frauds (upper and right) as well as other individual frauds whose patterns or features may look very similar to normal transactions so as hard to be identified.
 
 # Multivariate Analysis
 
@@ -451,14 +854,15 @@ I choose the features V1-V5 V7 V9-V12 V14 V16-V18 and Hour to run a t-SNE algori
 investigation. Were there features that strengthened each other in terms of \
 looking at your feature(s) of interest?
 
-The time series plots of features are more helpful to see the transaction distribution vary during a day. I will select the most useful features V1-V5 V7 V9-V12 V14 V16-V18 for fraud detection.
+The time series plots of features are more helpful to see the transaction distribution vary when the time elapses. I also observe the hour shifts and day shifts of some features. The plots confirm the useful features I found from bivariate analysis section.
 
-From the correlation heat matrix, I see some features are highly correlated e.g. V16-V18. To avoid redundancy, I think some correlated features can be dropped from a model.
+From the correlation heat matrix, I see some features are highly correlated e.g. V16-V18. I would not consider dropping some features before I build up a baseline model. 
 
+Finally I would like to select the most useful features to build a model: The features V1-V5 V7 V9-V12 V14 V16-V18 have distinct and separated distributions between frauds and nonfrauds; Hour has interactions with features V9 V11 V12 V14 v17; Day has an interaction with V4. 
 
 ### Were there any interesting or surprising interactions between features?
 
-The features like V12 V13 have a periodic shift at 1:00-7:00 everyday, also the distributions are various when the shift occurs. 
+The features like V12 V13 have a periodic shift at 1:00-7:00 everyday, also the distributions are various when the shift occurs. V4 and V26 have a day shift, so each day has a different distribution. 
 
 ### OPTIONAL: Did you create any models with your dataset? Discuss the \
 strengths and limitations of your model.

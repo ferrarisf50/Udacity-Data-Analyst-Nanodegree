@@ -409,4 +409,10 @@ ggplot(creditcard,aes(Time,V12))+geom_point(aes(color=Hour))
 ggplot(creditcard,aes(V18,V17))+geom_point(aes(color=Time))
 
   
-  
+ggplot(creditcard,aes(V1,Amount))+geom_point(aes(color=Class,size=Class,alpha=Class))+
+  scale_color_manual(values =  c("white","red"))+
+  scale_size_manual(values=c(1,1))+
+  scale_alpha_manual(values=c(0.1,1))+
+  scale_y_continuous(limits = c(0, 5000))+
+  theme(panel.background = element_rect(fill = 'black'),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
