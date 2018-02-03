@@ -28,3 +28,10 @@ Udacity Data Analyst Nanodegree Projects
 [Codes 1](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/Wrangle_report.ipynb)
 
 [Codes 2](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/Analysis_report.ipynb)
+
+### Project 4 : New York City Taxi Trip Duration
+
+[Data Visualization with Tableau](https://public.tableau.com/profile/pengchong.tang#!/vizhome/taxi2_1/Story1)
+
+[Write-up](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_4_NYC_taxi_trip_duration/Write-up.pdf)
+
