@@ -1,6 +1,6 @@
 # New York City Taxi Trip Duration
 
-# Inspiration
+### Inspiration
 
 This project is inspired by a Kaggle.com competition.
 
