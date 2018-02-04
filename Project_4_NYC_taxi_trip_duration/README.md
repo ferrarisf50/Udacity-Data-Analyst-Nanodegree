@@ -2,7 +2,7 @@
 
 # Inspiration
 
-This project is inspired by a Kaggle.com competition
+This project is inspired by a Kaggle.com competition.
 
 [https://www.kaggle.com/c/nyc-taxi-trip-duration](https://www.kaggle.com/c/nyc-taxi-trip-duration)
 
