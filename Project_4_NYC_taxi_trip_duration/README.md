@@ -10,4 +10,4 @@ This project is inspired by a Kaggle.com competition.
 
 [Visualize the NYC Taxi Trip data with Tableau](https://public.tableau.com/profile/pengchong.tang#!/vizhome/taxi2_1/Story1)
 
-[Write-up Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/blob/master/Project_4_NYC_taxi_trip_duration/Write-up.pdf)
+[Write-up Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_4_NYC_taxi_trip_duration/Write-up.pdf)
