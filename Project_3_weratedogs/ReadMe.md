@@ -1,4 +1,4 @@
-### Project 3 : WeRateDogs Data Wrangling
+# Project 3 : WeRateDogs Data Wrangling
 
 [Wrangle Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/wrangle_act.html)
 
