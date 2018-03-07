@@ -12,7 +12,7 @@ object Xgboost2{
      Logger.getLogger("org").setLevel(Level.ERROR)
     
      import org.apache.spark.sql.SQLContext
-     val sc = new SparkContext("local[*]", "LinearRegression")
+     val sc = new SparkContext("local[*]", "Xgboost2")
      val sqlContext = new SQLContext(sc)
      val train_data = sqlContext.read.parquet("../newdata3.parquet/*.parquet")
      
