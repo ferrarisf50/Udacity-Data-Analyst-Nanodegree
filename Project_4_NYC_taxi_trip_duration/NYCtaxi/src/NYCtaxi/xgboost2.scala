@@ -14,7 +14,7 @@ object Xgboost2{
      import org.apache.spark.sql.SQLContext
      val sc = new SparkContext("local[*]", "Xgboost2")
      val sqlContext = new SQLContext(sc)
-     val train_data = sqlContext.read.parquet("../newdata3.parquet/*.parquet")
+     val train_data = sqlContext.read.parquet("../parquet_file/*.parquet")
      
      println(train_data.count())
 
