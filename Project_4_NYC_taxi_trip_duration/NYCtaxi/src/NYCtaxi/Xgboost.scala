@@ -18,7 +18,7 @@ object Xgboost{
     
     import org.apache.spark.sql.SQLContext
     
-    val sc = new SparkContext("local[*]", "LinearRegression")
+    val sc = new SparkContext("local[*]", "Xgboost")
     val sqlContext = new SQLContext(sc)
     
     def load(path: String, sqlContext: SQLContext, featuresArr: String*): DataFrame = {

@@ -212,5 +212,13 @@
 	<classpathentry kind="lib" path="C:/spark/jars/xmlenc-0.52.jar"/>
 	<classpathentry kind="lib" path="C:/spark/jars/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="C:/spark/jars/zookeeper-3.4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-spark/target/xgboost4j-spark-0.8-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-spark/target/xgboost4j-spark-0.8-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-flink/target/xgboost4j-flink-0.8-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-flink/target/xgboost4j-flink-0.8-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j/target/xgboost4j-0.8-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j/target/xgboost4j-0.8-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-example/target/xgboost4j-example-0.8-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/TANGP05/Desktop/Xgboost/jvm-packages/xgboost4j-example/target/xgboost4j-example-0.8-SNAPSHOT-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
