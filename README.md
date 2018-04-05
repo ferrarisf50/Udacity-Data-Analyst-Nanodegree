@@ -5,7 +5,7 @@ Udacity Data Analyst Nanodegree Projects
 
 [Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_1/Test+a+Perceptual+Phenomenon.pdf)
 
-[Codes](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_1/Test+a+Perceptual+Phenomenon.ipynb)
+[Codes](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_1/Test%2Ba%2BPerceptual%2BPhenomenon.ipynb)
 
 ### Project 2 : CreditCard Fraud Detection
 
@@ -13,9 +13,9 @@ Udacity Data Analyst Nanodegree Projects
 
 [Modelling Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard_model.html)
 
-[Codes 1](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard.rmd)
+[Codes 1](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_2_creditcard_fraud_detection/creditcard.rmd)
 
-[Codes 2](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard.ipynb)
+[Codes 2](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_2_creditcard_fraud_detection/creditcard.ipynb)
 
 ### Project 3 : WeRateDogs Data Wrangling
 
@@ -25,9 +25,9 @@ Udacity Data Analyst Nanodegree Projects
 
 [Analysis Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/Analysis_report.html)
 
-[Codes 1](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/Wrangle_report.ipynb)
+[Codes 1](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_3_weratedogs/Wrangle_report.ipynb)
 
-[Codes 2](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_3_weratedogs/Analysis_report.ipynb)
+[Codes 2](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_3_weratedogs/act_report.ipynb)
 
 ### Project 4 : New York City Taxi Trip Duration
 
