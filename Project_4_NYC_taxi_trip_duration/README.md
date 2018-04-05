@@ -13,3 +13,5 @@ This project is inspired by a Kaggle.com competition.
 [Write-up Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_4_NYC_taxi_trip_duration/Write-up.pdf)
 
 [Getting route data from OSRM](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_4_NYC_taxi_trip_duration/get_data_from_OSRM.ipynb)
+
+[Counting route step coordinates](https://github.com/ferrarisf50/Udacity-Data-Analyst-Nanodegree/blob/master/Project_4_NYC_taxi_trip_duration/make_count_coord_v2.ipynb)
