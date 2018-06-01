@@ -8,7 +8,7 @@ This project is inspired by a credit card transaction dataset from kaggle.com.
 
 ### Scripts
 
-[Explanatory Analysis Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard.html)
+[Exploratory Analysis Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard.html)
 
 [Modelling Report](https://ferrarisf50.github.io/Udacity-Data-Analyst-Nanodegree/Project_2_creditcard_fraud_detection/creditcard_model.html)
 
